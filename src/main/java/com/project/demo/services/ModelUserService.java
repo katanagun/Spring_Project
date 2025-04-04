@@ -1,8 +1,8 @@
 package com.project.demo.services;
 
-import com.project.demo.models.User;
+import com.project.demo.db.User;
 
 public interface ModelUserService {
-    public boolean existUser(long idUser);
-    public void insertUser(long idUser, String nameUser);
+    public boolean existUser(Long userId);
+    public void insertUser(Long userId, String userName);
 }

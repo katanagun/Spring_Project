@@ -1,25 +1,24 @@
 package com.project.demo.controllers;
 
-import com.project.demo.services.ModelUserService;
-import com.project.demo.models.User;
+import com.project.demo.services.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/UserController")
+@RequestMapping("/users")
 public class UserController {
-    private final ModelUserService modelUserService;
+    private final UserService userService;
 
-    public UserController(ModelUserService modelUserService) {
-        this.modelUserService = modelUserService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping("/{idUser}")
-    public boolean get(@PathVariable long idUser){
-        return modelUserService.existUser(idUser);
+    @GetMapping("/exists/{userId}")
+    public boolean userExists(@PathVariable Long userId) {
+        return userService.existUser(userId);
     }
 
-    @PostMapping("/{idUser}/{nameUser}")
-    public void post(@PathVariable long idUser, @PathVariable String nameUser){
-        modelUserService.insertUser(idUser, nameUser);
+    @PostMapping("/insert/{userId}/{userName}")
+    public void insertUser(@PathVariable Long userId, @PathVariable String userName) {
+        userService.insertUser(userId, userName);
     }
 }

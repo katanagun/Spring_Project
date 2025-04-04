@@ -1,22 +1,21 @@
 package com.project.demo.services;
 
-import com.project.demo.models.User;
+import com.project.demo.db.repositories.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class UserService implements ModelUserService {
-    Map<Long, User> users = new HashMap<Long, User>();
+    private final UserRepository userDbRepository;
 
-    public boolean existUser(long idUser){
-        return users.containsKey(idUser);
+    public UserService(UserRepository userDbRepository){
+        this.userDbRepository = userDbRepository;
     }
 
-    public void insertUser(long idUser, String nameUser){
-        User user = new User(idUser, nameUser);
-        users.put(user.getIdUser(), user);
+    public boolean existUser(Long userId){
+        return userDbRepository.existsByUserId(userId);
     }
 
+    public void insertUser(Long userId, String userName){
+        userDbRepository.insert(userId, userName);
+    }
 }

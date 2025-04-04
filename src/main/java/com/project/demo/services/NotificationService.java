@@ -1,36 +1,43 @@
 package com.project.demo.services;
 
-import com.project.demo.models.Notification;
-import com.project.demo.models.Task;
-import com.project.demo.models.User;
+import com.project.demo.db.Notification;
+import com.project.demo.db.Task;
+import com.project.demo.db.repositories.NotificationRepository;
+import com.project.demo.db.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationService implements ModelNotificationService {
-    TaskService taskService;
-    Map<Long, Notification> notifications = new HashMap<>();
+    private final NotificationRepository notificationRepo;
+    private final TaskRepository taskRepo;
 
-    public NotificationService(TaskService taskService){
-        this.taskService = taskService;
+    public NotificationService(NotificationRepository notificationRepo, TaskRepository taskRepo) {
+        this.notificationRepo = notificationRepo;
+        this.taskRepo = taskRepo;
     }
 
-    public Collection<Notification> getUserNotifications(long idUser) {
-        return notifications.values().stream()
-                .filter(notification -> notification.getIdUser() == idUser)
-                .collect(Collectors.toList());
+    public Collection<Notification> getUserNotifications(Long userId){
+        return notificationRepo.findByUserId(userId);
     }
 
     public Collection<Notification> getAllNotifications() {
-        return notifications.values().stream()
+        return notificationRepo.findAll().stream()
                 .filter(notification -> {
-                    Task task = taskService.tasks.get(notification.getIdTask());
+                    Task task = taskRepo.findAllAndDeletedFalse().stream()
+                            .filter(t -> Objects.equals(t.getTaskId(), notification.getTaskId()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (task == null) {
+                        return false;
+                    }
 
                     return task.getCreationDate().isBefore(task.getTargetDate());
                 })
                 .collect(Collectors.toList());
     }
-
 }

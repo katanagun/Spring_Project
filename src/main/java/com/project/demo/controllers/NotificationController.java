@@ -1,29 +1,27 @@
 package com.project.demo.controllers;
 
-import com.project.demo.services.ModelNotificationService;
-import com.project.demo.models.Notification;
+import com.project.demo.db.Notification;
+import com.project.demo.services.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.List;
 
 @RestController
-@RequestMapping("/NotificationController")
+@RequestMapping("/notifications")
 public class NotificationController {
-    private final ModelNotificationService modelNotificationService;
+    private final NotificationService notificationService;
 
-    public NotificationController(ModelNotificationService modelNotificationService){
-        this.modelNotificationService = modelNotificationService;
+    public NotificationController(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
-    @GetMapping("/{idUser}")
-    public Collection<Notification> getUser(@PathVariable long idUser){
-        return modelNotificationService.getUserNotifications(idUser);
+    @GetMapping("/getAll")
+    public Collection<Notification> getAllNotifications() {
+        return notificationService.getAllNotifications();
     }
 
-    @GetMapping("/pending")
-    public Collection<Notification> get(){
-        return modelNotificationService.getAllNotifications();
+    @GetMapping("/user/{userId}")
+    public Collection<Notification> getUserNotifications(@PathVariable Long userId) {
+        return notificationService.getUserNotifications(userId);
     }
-
 }
