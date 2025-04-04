@@ -1,7 +1,7 @@
-package controllers;
+package com.project.demo.controllers;
 
-import models.ModelTaskService;
-import models.Task;
+import com.project.demo.services.ModelTaskService;
+import com.project.demo.models.Task;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,19 +14,17 @@ public class TaskController {
     }
 
     @GetMapping("/{key}")
-    public Task get(@PathVariable int key){
+    public Task get(@PathVariable long key){
         return mapService.getData(key);
     }
 
-    @PostMapping("/{key}")
-    public String post(@PathVariable int key, @RequestBody Task task){
-        mapService.putData(key, task);
-        return "post success";
+    @PostMapping()
+    public void post(@RequestBody Task task){
+        mapService.putData(task);
     }
 
     @DeleteMapping("/{key}")
-    public String delete(@PathVariable int key){
+    public void delete(@PathVariable long key){
         mapService.deleteData(key);
-        return "delete success";
     }
 }
