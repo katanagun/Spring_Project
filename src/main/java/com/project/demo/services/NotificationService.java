@@ -20,7 +20,13 @@ public class NotificationService implements ModelNotificationService {
                 result.add(element);
             }
         }
-        return result;
+        if (result.isEmpty()){
+            return null;
+        }
+        else{
+            return result;
+        }
+
     }
 
     public void putNotification(Notification notification){
