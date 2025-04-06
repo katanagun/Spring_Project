@@ -9,19 +9,29 @@ import java.util.List;
 @RestController
 @RequestMapping("/NotificationController")
 public class NotificationController {
-    private final ModelNotificationService listService;
+    private final ModelNotificationService mapService;
 
     public NotificationController(ModelNotificationService listService){
-        this.listService = listService;
+        this.mapService = listService;
     }
 
-    @GetMapping("/{idNotification}/{purpose}")
-    public List<Notification> get(@PathVariable long idNotification,@PathVariable String purpose){
-        return listService.getNotification(idNotification, purpose);
+    @GetMapping("/user/{idNotification}")
+    public Notification getUser(@PathVariable long idNotification){
+        return mapService.getNotification(idNotification, "user");
     }
 
-    @PostMapping()
-    public void post(@RequestBody Notification notification){
-        listService.putNotification(notification);
+    @GetMapping("/task/{idNotification}")
+    public Notification getTask(@PathVariable long idNotification){
+        return mapService.getNotification(idNotification, "task");
+    }
+
+    @PostMapping("/user")
+    public void postUser(@RequestBody Notification notification){
+        mapService.putNotification(notification, "user");
+    }
+
+    @PostMapping("/task")
+    public void postTask(@RequestBody Notification notification){
+        mapService.putNotification(notification, "task");
     }
 }

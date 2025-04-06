@@ -6,6 +6,4 @@ import lombok.Data;
 public class Notification {
     long idNotification;
     String valueNotification;
-    String purpose;
-
 }

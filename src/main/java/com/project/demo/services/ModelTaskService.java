@@ -3,7 +3,7 @@ package com.project.demo.services;
 import com.project.demo.models.Task;
 
 public interface ModelTaskService {
-    public void putData(Task task);
-    public Task getData(long key);
-    public void deleteData(long key);
+    public void putTask(Task task);
+    public Task getTask(long key);
+    public void deleteTask(long key);
 }

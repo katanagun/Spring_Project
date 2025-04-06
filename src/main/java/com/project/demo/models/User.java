@@ -9,6 +9,10 @@ public class User {
         this.nameUser = nameUser;
     }
 
+    public User(){
+
+    }
+
     public long getIdUser(){
         return this.idUser;
     }

@@ -15,16 +15,16 @@ public class TaskController {
 
     @GetMapping("/{key}")
     public Task get(@PathVariable long key){
-        return mapService.getData(key);
+        return mapService.getTask(key);
     }
 
     @PostMapping()
     public void post(@RequestBody Task task){
-        mapService.putData(task);
+        mapService.putTask(task);
     }
 
     @DeleteMapping("/{key}")
     public void delete(@PathVariable long key){
-        mapService.deleteData(key);
+        mapService.deleteTask(key);
     }
 }
