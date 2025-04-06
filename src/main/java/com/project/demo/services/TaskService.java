@@ -8,17 +8,17 @@ import java.util.Map;
 
 @Service
 public class TaskService implements ModelTaskService {
-    Map<Long, Task> data = new HashMap<>();
+    Map<Long, Task> tasks = new HashMap<>();
 
-    public void putData(Task task){
-        data.put(task.getIdTask(), task);
+    public void putTask(Task task){
+        tasks.put(task.getIdTask(), task);
     }
 
-    public Task getData(long key){
-        return data.get(key);
+    public Task getTask(long key){
+        return tasks.get(key);
     }
 
-    public void deleteData(long key){
-        data.remove(key);
+    public void deleteTask(long key){
+        tasks.remove(key);
     }
 }

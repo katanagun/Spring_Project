@@ -5,32 +5,19 @@ import com.project.demo.models.Task;
 import com.project.demo.models.User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class NotificationService implements ModelNotificationService {
-    List<Notification> notifications = new ArrayList<Notification>();
+    Map<String, Notification> notifications = new HashMap<>();
 
-    public List<Notification> getNotification(long idNotification, String purpose){
-        List<Notification> result = new ArrayList<Notification>();
-        for (Notification element : notifications){
-            if (element.getIdNotification() == idNotification && element.getPurpose().equalsIgnoreCase(purpose)){
-                result.add(element);
-            }
-        }
-        if (result.isEmpty()){
-            return null;
-        }
-        else{
-            return result;
-        }
+    public Notification getNotification(long idNotification, String type){
+        return notifications.get(idNotification + ":" + type);
 
     }
 
-    public void putNotification(Notification notification){
-        notifications.add(notification);
+    public void putNotification(Notification notification, String type){
+        notifications.put(notification.getIdNotification() + ":" + type, notification);
     }
 
 }

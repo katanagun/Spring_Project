@@ -5,7 +5,7 @@ import com.project.demo.models.Notification;
 import java.util.List;
 
 public interface ModelNotificationService {
-    public List<Notification> getNotification(long id, String purpose);
-    public void putNotification(Notification notification);
+    public Notification getNotification(long id, String type);
+    public void putNotification(Notification notification, String type);
 
 }
