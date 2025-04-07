@@ -1,6 +1,6 @@
 package com.project.demo.services;
 
-import com.project.demo.models.Notification;
+import com.project.demo.db.Notification;
 
 import java.util.List;
 

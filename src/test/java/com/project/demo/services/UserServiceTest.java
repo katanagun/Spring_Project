@@ -1,42 +1,61 @@
 package com.project.demo.services;
 
-import com.project.demo.models.User;
-import org.junit.jupiter.api.BeforeEach;
+import com.project.demo.db.repository.UserRep;
+import com.project.demo.db.User;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
+    @Mock
+    private UserRep userRep;
+
+    @InjectMocks
     private UserService userService;
 
-    @BeforeEach
-    public void setup(){
-        userService = new UserService();
-    }
-
     @Test
-    public void shouldPutUserMap(){
-        User user = new User(1, "Bogdan");
+    void shouldPutUser() {
+        User user = new User();
+        user.setName("Bogdan");
+
         userService.putUser(user);
 
-        assertNotNull(userService.getUser(1));
-        assertEquals("Bogdan", userService.getUser(1).getNameUser());
+        verify(userRep).save(user);
     }
 
     @Test
-    public void shouldGetUserMap(){
-        User user = new User(2, "Bogdan");
-        userService.putUser(user);
+    void shouldGetUser() {
+        long userId = 2;
+        User mockUser = new User();
+        mockUser.setName("Bogdan");
 
-        User gUser = userService.getUser(2);
+        when(userRep.findById(userId)).thenReturn(Optional.of(mockUser));
 
-        assertNotNull(userService.getUser(2));
-        assertEquals("Bogdan", userService.getUser(2).getNameUser());
+        User retrievedUser = userService.getUser(userId);
+
+        assertNotNull(retrievedUser);
+        assertEquals("Bogdan", retrievedUser.getName());
+        verify(userRep).findById(userId);
     }
 
     @Test
-    public void shouldGetNullUserMissing(){
-        assertNull(userService.getUser(1));
+    void shouldGetNullUserMissing() {
+        long userId = 1;
+
+        when(userRep.findById(userId)).thenReturn(Optional.empty());
+
+        assertNull(userService.getUser(userId));
+        verify(userRep).findById(userId);
     }
 }

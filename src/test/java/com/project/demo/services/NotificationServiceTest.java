@@ -1,77 +1,129 @@
 package com.project.demo.services;
 
-import com.project.demo.models.Notification;
-import org.junit.jupiter.api.BeforeEach;
+import com.project.demo.db.repository.NotificationRep;
+import com.project.demo.db.Notification;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
+    @Mock
+    private NotificationRep notificationRep;
+
+    @InjectMocks
     private NotificationService notificationService;
 
-    @BeforeEach
-    public void setup(){
-        notificationService = new NotificationService();
-    }
-
     @Test
-    public void shouldPutUserNotificationMap(){
-        Notification notification1 = new Notification();
-        notification1.setIdNotification(1);
-        notification1.setValueNotification("notification for user");
-        notificationService.putNotification(notification1, "user");
-
-        assertNotNull(notificationService.getNotification(1, "user"));
-        assertEquals("notification for user", notificationService.getNotification(1, "user").getValueNotification());
-    }
-
-    @Test
-    public void shouldPutTaskNotificationMap(){
-        Notification notification2 = new Notification();
-        notification2.setIdNotification(2);
-        notification2.setValueNotification("notification for task");
-        notificationService.putNotification(notification2, "task");
-
-        assertNotNull(notificationService.getNotification(2, "task"));
-        assertEquals("notification for task", notificationService.getNotification(2, "task").getValueNotification());
-    }
-
-    @Test
-    public void shouldGetUserNotification(){
+    void shouldPutUserNotification() {
         Notification notification = new Notification();
-        notification.setIdNotification(1);
-        notification.setValueNotification("notification for user");
-        notificationService.putNotification(notification, "user");
+        notification.setValue("notification for user");
+        String type = "user";
 
-        Notification gNotification = notificationService.getNotification(1, "user");
+        notificationService.putNotification(notification, type);
 
-        assertNotNull(notificationService.getNotification(1, "user"));
-        assertEquals("notification for user", gNotification.getValueNotification());
+        verify(notificationRep).save(notification);
+        assertEquals(type, notification.getType());
     }
 
     @Test
-    public void shouldGetTaskNotification(){
+    void shouldPutTaskNotification() {
         Notification notification = new Notification();
-        notification.setIdNotification(2);
-        notification.setValueNotification("notification for task");
-        notificationService.putNotification(notification, "task");
+        notification.setValue("notification for task");
+        String type = "task";
 
-        Notification gNotification = notificationService.getNotification(2, "task");
+        notificationService.putNotification(notification, type);
 
-        assertNotNull(notificationService.getNotification(2, "task"));
-        assertEquals("notification for task", gNotification.getValueNotification());
+        verify(notificationRep).save(notification);
+        assertEquals(type, notification.getType());
     }
 
     @Test
-    public void shouldGetNullNotificationUserMissing(){
-        assertNull(notificationService.getNotification(10, "user"));
+    void shouldGetUserNotification() {
+        long notificationId = 1;
+        String type = "user";
+        Notification mockNotification = new Notification();
+        mockNotification.setId(notificationId);
+        mockNotification.setValue("notification for user");
+        mockNotification.setType(type);
+
+        when(notificationRep.findById(notificationId)).thenReturn(Optional.of(mockNotification));
+
+        Notification retrievedNotification = notificationService.getNotification(notificationId, type);
+
+        assertNotNull(retrievedNotification);
+        assertEquals("notification for user", retrievedNotification.getValue());
+        assertEquals(type, retrievedNotification.getType());
+        verify(notificationRep).findById(notificationId);
     }
 
     @Test
-    public void shouldGetNullNotificationTaskMissing(){
-        assertNull(notificationService.getNotification(10, "task"));
+    void shouldGetTaskNotification() {
+        long notificationId = 2;
+        String type = "task";
+        Notification mockNotification = new Notification();
+        mockNotification.setId(notificationId);
+        mockNotification.setValue("notification for task");
+        mockNotification.setType(type);
+
+        when(notificationRep.findById(notificationId)).thenReturn(Optional.of(mockNotification));
+
+        Notification retrievedNotification = notificationService.getNotification(notificationId, type);
+
+        assertNotNull(retrievedNotification);
+        assertEquals("notification for task", retrievedNotification.getValue());
+        assertEquals(type, retrievedNotification.getType());
+        verify(notificationRep).findById(notificationId);
+    }
+
+    @Test
+    void shouldGetNullNotificationUserMissing() {
+        long notificationId = 10;
+        String type = "user";
+
+        when(notificationRep.findById(notificationId)).thenReturn(Optional.empty());
+
+        Notification retrievedNotification = notificationService.getNotification(notificationId, type);
+        assertNull(retrievedNotification);
+        verify(notificationRep).findById(notificationId);
+    }
+
+    @Test
+    void shouldGetNullNotificationTaskMissing() {
+        long notificationId = 10;
+        String type = "task";
+
+        when(notificationRep.findById(notificationId)).thenReturn(Optional.empty());
+
+        Notification retrievedNotification = notificationService.getNotification(notificationId, type);
+        assertNull(retrievedNotification);
+        verify(notificationRep).findById(notificationId);
+    }
+
+    @Test
+    void shouldReturnNullIfTypeDoesNotMatch() {
+        long notificationId = 1;
+        String expectedType = "user";
+        String actualType = "task";
+
+        Notification mockNotification = new Notification();
+        mockNotification.setId(notificationId);
+        mockNotification.setValue("test notification");
+        mockNotification.setType(actualType);
+
+        when(notificationRep.findById(notificationId)).thenReturn(Optional.of(mockNotification));
+
+        Notification retrievedNotification = notificationService.getNotification(notificationId, expectedType);
+        assertNull(retrievedNotification);
+        verify(notificationRep).findById(notificationId);
     }
 }

@@ -1,6 +1,7 @@
 package com.project.demo.services;
 
-import com.project.demo.models.Task;
+import com.project.demo.db.repository.TaskRep;
+import com.project.demo.db.Task;
 
 public interface ModelTaskService {
     public void putTask(Task task);

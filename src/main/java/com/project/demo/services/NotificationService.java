@@ -1,23 +1,25 @@
 package com.project.demo.services;
 
-import com.project.demo.models.Notification;
-import com.project.demo.models.Task;
-import com.project.demo.models.User;
+import com.project.demo.db.Notification;
+import com.project.demo.db.repository.NotificationRep;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class NotificationService implements ModelNotificationService {
-    Map<String, Notification> notifications = new HashMap<>();
+    @Autowired
+    private NotificationRep notificationRep;
 
     public Notification getNotification(long idNotification, String type){
-        return notifications.get(idNotification + ":" + type);
-
+        Optional<Notification> optionalNotification = notificationRep.findById(idNotification).filter(notification -> Objects.equals(notification.getType(), type));
+        return optionalNotification.orElse(null);
     }
 
     public void putNotification(Notification notification, String type){
-        notifications.put(notification.getIdNotification() + ":" + type, notification);
+        notification.setType(type);
+        notificationRep.save(notification);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.project.demo.services;
 
-import com.project.demo.models.User;
+import com.project.demo.db.User;
 
 public interface ModelUserService {
     public User getUser(long key);

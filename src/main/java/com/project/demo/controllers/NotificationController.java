@@ -1,7 +1,8 @@
 package com.project.demo.controllers;
 
+import com.project.demo.db.repository.NotificationRep;
 import com.project.demo.services.ModelNotificationService;
-import com.project.demo.models.Notification;
+import com.project.demo.db.Notification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class NotificationController {
     private final ModelNotificationService mapService;
 
-    public NotificationController(ModelNotificationService listService){
+    public NotificationController(ModelNotificationService listService, NotificationRep notificationRep){
         this.mapService = listService;
     }
 

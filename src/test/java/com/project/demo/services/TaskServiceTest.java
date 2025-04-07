@@ -1,58 +1,71 @@
 package com.project.demo.services;
 
-import com.project.demo.models.Task;
-import org.junit.jupiter.api.BeforeEach;
+import com.project.demo.db.Task;
+import com.project.demo.db.repository.TaskRep;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class TaskServiceTest {
 
+    @Mock
+    private TaskRep taskRep;
+
+    @InjectMocks
     private TaskService taskService;
 
-    @BeforeEach
-    public void setup(){
-        taskService = new TaskService();
-    }
-
     @Test
-    public void shouldPutTaskMap(){
+    void shouldPutTask() {
         Task task = new Task();
-        task.setIdTask(1);
-        task.setValueTask("test task 1");
+        task.setId(1);
+        task.setValue("test task 1");
+
         taskService.putTask(task);
 
-        assertNotNull(taskService.getTask(1));
-        assertEquals("test task 1", taskService.getTask(1).getValueTask());
+        verify(taskRep).save(task);
     }
 
     @Test
-    public void shouldGetTaskMap(){
-        Task task = new Task();
-        task.setIdTask(2);
-        task.setValueTask("test value 2");
-        taskService.putTask(task);
+    void shouldGetTask() {
+        long taskId = 2;
+        Task mockTask = new Task();
+        mockTask.setId(taskId);
+        mockTask.setValue("test value 2");
 
-        Task gTask = taskService.getTask(2);
+        when(taskRep.findById(taskId)).thenReturn(Optional.of(mockTask));
 
-        assertNotNull(gTask);
-        assertEquals("test value 2", gTask.getValueTask());
+        Task retrievedTask = taskService.getTask(taskId);
+
+        assertNotNull(retrievedTask);
+        assertEquals("test value 2", retrievedTask.getValue());
+        verify(taskRep).findById(taskId);
     }
 
     @Test
-    public void shouldReturnNullTaskMissing(){
-        assertNull(taskService.getTask(1));
+    void shouldReturnNullTaskMissing() {
+        long taskId = 1;
+
+        when(taskRep.findById(taskId)).thenReturn(Optional.empty());
+
+        assertNull(taskService.getTask(taskId));
+        verify(taskRep).findById(taskId);
     }
 
     @Test
-    public void shouldDeleteTaskMap(){
-        Task task = new Task();
-        task.setIdTask(3);
-        task.setValueTask("test value 3");
-        taskService.putTask(task);
+    void shouldDeleteTask() {
+        long taskId = 3;
 
-        taskService.deleteTask(3);
+        taskService.deleteTask(taskId);
 
-        assertNull(taskService.getTask(3));
+        verify(taskRep).deleteById(taskId);
     }
 }
