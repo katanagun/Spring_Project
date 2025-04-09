@@ -5,6 +5,8 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/testdb
+      SPRING_DATASOURCE_USERNAME: temp
+      SPRING_DATASOURCE_PASSWORD: temp
     depends_on:
       - h2-db
 
@@ -15,8 +17,8 @@ services:
       - "1521:1521"
       - "81:81"
     environment:
-      H2_OPTIONS: "-ifNotExists -webAllowOthers"
+      H2_OPTIONS: "-ifNotExists"
     volumes:
-      - h2-data:/root
+      - h2-data:/opt/h2-data
 volumes:
   h2-data:
