@@ -15,8 +15,8 @@ public class TaskController {
     }
 
     @GetMapping("/{key}")
-    public Task get(@PathVariable long idNotification){
-        return taskService.getTask(idNotification);
+    public Task get(@PathVariable long key){
+        return taskService.getTask(key);
     }
 
     @PostMapping()
