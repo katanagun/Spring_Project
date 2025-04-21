@@ -1,0 +1,4 @@
+CREATE TABLE tasks (
+    id BIGSERIAL PRIMARY KEY NOT NULL,
+    task_value VARCHAR(255) NOT NULL
+);

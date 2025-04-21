@@ -3,7 +3,7 @@ package com.project.demo.db;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Notifications")
+@Table(name = "notifications")
 public class Notification {
 
     /**
