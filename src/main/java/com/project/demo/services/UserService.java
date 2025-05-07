@@ -8,14 +8,14 @@ import java.util.Map;
 
 @Service
 public class UserService implements ModelUserService {
-    Map<Long, User> data = new HashMap<Long, User>();
+    Map<Long, User> users = new HashMap<Long, User>();
 
-    public User getUser(long idUser){
-        return data.get(idUser);
+    public boolean getUser(long idUser){
+        return users.containsKey(idUser);
     }
 
     public void putUser(User user){
-        data.put(user.getIdUser(), user);
+        users.put(user.getIdUser(), user);
     }
 
 }

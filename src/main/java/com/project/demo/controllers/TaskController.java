@@ -4,6 +4,8 @@ import com.project.demo.services.ModelTaskService;
 import com.project.demo.models.Task;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping("/TaskController")
 public class TaskController {
@@ -13,18 +15,23 @@ public class TaskController {
         this.mapService = mapService;
     }
 
-    @GetMapping("/{key}")
-    public Task get(@PathVariable long key){
-        return mapService.getTask(key);
+    @GetMapping
+    public Collection<Task> getAll(){
+        return mapService.getAllTasks();
     }
 
-    @PostMapping()
-    public void post(@RequestBody Task task){
-        mapService.putTask(task);
+    @GetMapping("/pendingTasks")
+    public Collection<Task> get(){
+        return mapService.getTask();
     }
 
-    @DeleteMapping("/{key}")
-    public void delete(@PathVariable long key){
-        mapService.deleteTask(key);
+    @PostMapping("/{idUser}")
+    public void post(@RequestBody Task task, @PathVariable long idUser){
+        mapService.putTask(task, idUser);
+    }
+
+    @DeleteMapping("/{idUser}/{idTask}")
+    public void delete(@PathVariable long idUser, @PathVariable long idTask){
+        mapService.deleteTask(idUser, idTask, "deleted");
     }
 }
