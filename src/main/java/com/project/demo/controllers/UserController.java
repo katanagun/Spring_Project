@@ -14,7 +14,7 @@ public class UserController {
     }
 
     @GetMapping("/{idUser}")
-    public User get(@PathVariable long idUser){
+    public boolean get(@PathVariable long idUser){
         return mapService.getUser(idUser);
     }
 
