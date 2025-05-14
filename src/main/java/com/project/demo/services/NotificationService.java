@@ -9,15 +9,28 @@ import java.util.*;
 
 @Service
 public class NotificationService implements ModelNotificationService {
-    Map<String, Notification> notifications = new HashMap<>();
+    TaskService taskService;
 
-    public Notification getNotification(long idNotification, String type){
-        return notifications.get(idNotification + ":" + type);
+    Map<Long, Notification> notifications = new HashMap<>();
 
+    public Collection<Notification> getUserNotifications(long idUser){
+        Collection<Notification> filteredNotification = new ArrayList<>();
+        for (Notification notification: notifications.values()){
+            if (notification.getIdUser() == idUser){
+                filteredNotification.add(notification);
+            }
+        }
+        return filteredNotification;
     }
 
-    public void putNotification(Notification notification, String type){
-        notifications.put(notification.getIdNotification() + ":" + type, notification);
+    public Collection<Notification> getNotification(){
+        Collection<Notification> pendingNotification = new ArrayList<>();
+        for (Notification notification: notifications.values()){
+            if (taskService.tasks.get(notification.getIdTask()).getCreationDate().isBefore(taskService.tasks.get(notification.getIdTask()).getTargetDate())){
+                pendingNotification.add(notification);
+            }
+        }
+        return pendingNotification;
     }
 
 }

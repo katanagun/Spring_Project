@@ -4,6 +4,7 @@ import com.project.demo.services.ModelNotificationService;
 import com.project.demo.models.Notification;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -11,27 +12,18 @@ import java.util.List;
 public class NotificationController {
     private final ModelNotificationService mapService;
 
-    public NotificationController(ModelNotificationService listService){
-        this.mapService = listService;
+    public NotificationController(ModelNotificationService mapService){
+        this.mapService = mapService;
     }
 
-    @GetMapping("/user/{idNotification}")
-    public Notification getUser(@PathVariable long idNotification){
-        return mapService.getNotification(idNotification, "user");
+    @GetMapping("/{idUser}")
+    public Collection<Notification> getUser(@PathVariable long idUser){
+        return mapService.getUserNotifications(idUser);
     }
 
-    @GetMapping("/task/{idNotification}")
-    public Notification getTask(@PathVariable long idNotification){
-        return mapService.getNotification(idNotification, "task");
+    @GetMapping("/pending")
+    public Collection<Notification> get(){
+        return mapService.getNotification();
     }
 
-    @PostMapping("/user")
-    public void postUser(@RequestBody Notification notification){
-        mapService.putNotification(notification, "user");
-    }
-
-    @PostMapping("/task")
-    public void postTask(@RequestBody Notification notification){
-        mapService.putNotification(notification, "task");
-    }
 }
