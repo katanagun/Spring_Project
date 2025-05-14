@@ -7,19 +7,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/UserController")
 public class UserController {
-    private final ModelUserService mapService;
+    private final ModelUserService modelUserService;
 
-    public UserController(ModelUserService mapService) {
-        this.mapService = mapService;
+    public UserController(ModelUserService modelUserService) {
+        this.modelUserService = modelUserService;
     }
 
     @GetMapping("/{idUser}")
     public boolean get(@PathVariable long idUser){
-        return mapService.getUser(idUser);
+        return modelUserService.existUser(idUser);
     }
 
-    @PostMapping()
-    public void post(@RequestBody User user){
-        mapService.putUser(user);
+    @PostMapping("/{idUser}/{nameUser}")
+    public void post(@PathVariable long idUser, @PathVariable String nameUser){
+        modelUserService.insertUser(idUser, nameUser);
     }
 }

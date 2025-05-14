@@ -6,6 +6,7 @@ import com.project.demo.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationService implements ModelNotificationService {
@@ -13,24 +14,20 @@ public class NotificationService implements ModelNotificationService {
 
     Map<Long, Notification> notifications = new HashMap<>();
 
-    public Collection<Notification> getUserNotifications(long idUser){
-        Collection<Notification> filteredNotification = new ArrayList<>();
-        for (Notification notification: notifications.values()){
-            if (notification.getIdUser() == idUser){
-                filteredNotification.add(notification);
-            }
-        }
-        return filteredNotification;
+    public Collection<Notification> getUserNotifications(long idUser) {
+        return notifications.values().stream()
+                .filter(notification -> notification.getIdUser() == idUser)
+                .collect(Collectors.toList());
     }
 
-    public Collection<Notification> getNotification(){
-        Collection<Notification> pendingNotification = new ArrayList<>();
-        for (Notification notification: notifications.values()){
-            if (taskService.tasks.get(notification.getIdTask()).getCreationDate().isBefore(taskService.tasks.get(notification.getIdTask()).getTargetDate())){
-                pendingNotification.add(notification);
-            }
-        }
-        return pendingNotification;
+    public Collection<Notification> getAllNotifications() {
+        return notifications.values().stream()
+                .filter(notification -> {
+                    Task task = taskService.tasks.get(notification.getIdTask());
+
+                    return task.getCreationDate().isBefore(task.getTargetDate());
+                })
+                .collect(Collectors.toList());
     }
 
 }

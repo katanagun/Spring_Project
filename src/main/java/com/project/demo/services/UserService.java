@@ -10,11 +10,12 @@ import java.util.Map;
 public class UserService implements ModelUserService {
     Map<Long, User> users = new HashMap<Long, User>();
 
-    public boolean getUser(long idUser){
+    public boolean existUser(long idUser){
         return users.containsKey(idUser);
     }
 
-    public void putUser(User user){
+    public void insertUser(long idUser, String nameUser){
+        User user = new User(idUser, nameUser);
         users.put(user.getIdUser(), user);
     }
 

@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ModelNotificationService {
     public Collection<Notification> getUserNotifications(long idUser);
-    public Collection<Notification> getNotification();
+    public Collection<Notification> getAllNotifications();
 
 }
