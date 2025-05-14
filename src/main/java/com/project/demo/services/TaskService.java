@@ -4,7 +4,9 @@ import com.project.demo.models.Notification;
 import com.project.demo.models.Task;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService implements ModelTaskService {
@@ -18,29 +20,43 @@ public class TaskService implements ModelTaskService {
 
     Map<Long, Task> tasks = new HashMap<>();
 
-    public void putTask(Task task, long idUser){
-        tasks.put(task.getIdTask(), task);
-        userService.users.get(idUser).setIdTask(task.getIdTask());
+    public void insertTask(long idTask, long idUser, String valueTask, ZonedDateTime targetDate){
+        if (userService.users.get(idUser) != null){
+            Task task = new Task(idTask, idUser, valueTask, targetDate);
+            tasks.put(task.getIdTask(), task);
+        }
+        else{
+            throw new IllegalArgumentException("User with id " + idUser + " not found.");
+        }
     }
 
-    public Collection<Task> getAllTasks(){
-        Collection<Task> filteredTasks = new ArrayList<>();
-        for (Task task: tasks.values()){
-            if(notificationService.notifications.get(task.getIdTask()).getValue() != "deleted"){
-                filteredTasks.add(task);
-            }
-        }
-        return filteredTasks;
+    public Collection<Task> getAllTasks() {
+        return tasks.values().stream()
+                .filter(task -> {
+                    Notification notification = notificationService.notifications.get(task.getIdTask());
+
+                    if (notification == null) {
+                        return true;
+                    }
+
+                    return !"deleted".equals(notification.getValue());
+                })
+                .collect(Collectors.toList());
     }
 
-    public Collection<Task> getTask(){
-        Collection<Task> pendingTasks = new ArrayList<>();
-        for (Task task: tasks.values()){
-            if (task.getCreationDate().isBefore(task.getTargetDate()) && notificationService.notifications.get(task.getIdTask()).getValue() != "deleted"){
-                pendingTasks.add(task);
-            }
-        }
-        return pendingTasks;
+    public Collection<Task> getTasks() {
+        return tasks.values().stream()
+                .filter(task -> {
+                    Notification notification = notificationService.notifications.get(task.getIdTask());
+
+                    if (notification == null) {
+                        return task.getCreationDate().isBefore(task.getTargetDate());
+                    }
+
+                    return task.getCreationDate().isBefore(task.getTargetDate()) &&
+                            !"deleted".equals(notification.getValue());
+                })
+                .collect(Collectors.toList());
     }
 
     public void deleteTask(long idUser, long idTask, String notification){
