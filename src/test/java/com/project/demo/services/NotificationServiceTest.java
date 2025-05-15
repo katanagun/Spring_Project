@@ -1,77 +1,67 @@
 package com.project.demo.services;
 
 import com.project.demo.models.Notification;
+import com.project.demo.models.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.time.ZonedDateTime;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NotificationServiceTest {
+class NotificationServiceTest {
 
     private NotificationService notificationService;
+    private TaskService taskService;
 
     @BeforeEach
-    public void setup(){
-        notificationService = new NotificationService();
+    void setUp() {
+        taskService = new TaskService(new UserService(), new NotificationService(taskService));
+        notificationService = new NotificationService(taskService);
     }
 
     @Test
-    public void shouldPutUserNotificationMap(){
-        Notification notification1 = new Notification();
-        notification1.setIdNotification(1);
-        notification1.setValueNotification("notification for user");
-        notificationService.putNotification(notification1, "user");
+    void testGetUserNotifications() {
+        Notification notification1 = new Notification(1L, 101L, "deleted");
 
-        assertNotNull(notificationService.getNotification(1, "user"));
-        assertEquals("notification for user", notificationService.getNotification(1, "user").getValueNotification());
+        notificationService.notifications.put(101L, notification1);
+
+        Collection<Notification> userNotifications = notificationService.getUserNotifications(1L);
+
+        assertEquals(1, userNotifications.size());
+        assertTrue(userNotifications.contains(notification1));
+
     }
 
     @Test
-    public void shouldPutTaskNotificationMap(){
-        Notification notification2 = new Notification();
-        notification2.setIdNotification(2);
-        notification2.setValueNotification("notification for task");
-        notificationService.putNotification(notification2, "task");
+    void testGetAllNotifications() {
+        Notification notification1 = new Notification(1L, 101L, "deleted");
+        Notification notification2 = new Notification(2L, 102L, "deleted");
 
-        assertNotNull(notificationService.getNotification(2, "task"));
-        assertEquals("notification for task", notificationService.getNotification(2, "task").getValueNotification());
+        Task task1 = new Task(101L, 1L, "Task 1", ZonedDateTime.now().plusDays(3));
+        Task task2 = new Task(102L, 2L, "Task 2", ZonedDateTime.now().minusDays(1));
+
+        notificationService.notifications.put(101L, notification1);
+        notificationService.notifications.put(102L, notification2);
+
+        taskService.tasks.put(101L, task1);
+        taskService.tasks.put(102L, task2);
+
+        Collection<Notification> allNotifications = notificationService.getAllNotifications();
+
+        assertEquals(1, allNotifications.size());
+        assertTrue(allNotifications.contains(notification1));
+        assertFalse(allNotifications.contains(notification2));
     }
 
     @Test
-    public void shouldGetUserNotification(){
-        Notification notification = new Notification();
-        notification.setIdNotification(1);
-        notification.setValueNotification("notification for user");
-        notificationService.putNotification(notification, "user");
+    void testGetAllNotificationsWhenNoNotifications() {
+        notificationService.notifications.clear();
 
-        Notification gNotification = notificationService.getNotification(1, "user");
+        Collection<Notification> allNotifications = notificationService.getAllNotifications();
 
-        assertNotNull(notificationService.getNotification(1, "user"));
-        assertEquals("notification for user", gNotification.getValueNotification());
+        assertTrue(allNotifications.isEmpty());
     }
 
-    @Test
-    public void shouldGetTaskNotification(){
-        Notification notification = new Notification();
-        notification.setIdNotification(2);
-        notification.setValueNotification("notification for task");
-        notificationService.putNotification(notification, "task");
-
-        Notification gNotification = notificationService.getNotification(2, "task");
-
-        assertNotNull(notificationService.getNotification(2, "task"));
-        assertEquals("notification for task", gNotification.getValueNotification());
-    }
-
-    @Test
-    public void shouldGetNullNotificationUserMissing(){
-        assertNull(notificationService.getNotification(10, "user"));
-    }
-
-    @Test
-    public void shouldGetNullNotificationTaskMissing(){
-        assertNull(notificationService.getNotification(10, "task"));
-    }
 }

@@ -1,58 +1,93 @@
 package com.project.demo.services;
 
+import com.project.demo.models.Notification;
 import com.project.demo.models.Task;
+import com.project.demo.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TaskServiceTest {
-
+class TaskServiceTest {
     private TaskService taskService;
+    private UserService userService;
+    private NotificationService notificationService;
 
     @BeforeEach
-    public void setup(){
-        taskService = new TaskService();
+    void setUp() {
+        userService = new UserService();
+        notificationService = new NotificationService(taskService);
+        taskService = new TaskService(userService, notificationService);
+
+        userService.insertUser(1L, "Test User");
     }
 
     @Test
-    public void shouldPutTaskMap(){
-        Task task = new Task();
-        task.setIdTask(1);
-        task.setValueTask("test task 1");
-        taskService.putTask(task);
+    void testInsertTask() {
+        long idTask = 101L;
+        long idUser = 1L;
+        String taskValue = "Test Task";
+        ZonedDateTime targetDate = ZonedDateTime.now().plusDays(5);
 
-        assertNotNull(taskService.getTask(1));
-        assertEquals("test task 1", taskService.getTask(1).getValueTask());
+        taskService.insertTask(idTask, idUser, taskValue, targetDate);
+
+        Task task = taskService.tasks.get(idTask);
+
+        assertNotNull(task);
+        assertEquals(idTask, task.getIdTask());
+        assertEquals(idUser, task.getIdUser());
+        assertEquals(taskValue, task.getValueTask());
     }
 
     @Test
-    public void shouldGetTaskMap(){
-        Task task = new Task();
-        task.setIdTask(2);
-        task.setValueTask("test value 2");
-        taskService.putTask(task);
+    void testInsertTaskForNonExistingUser() {
+        long idTask = 102L;
+        long idUser = 999L;
+        String taskValue = "Should Fail";
+        ZonedDateTime targetDate = ZonedDateTime.now().plusDays(5);
 
-        Task gTask = taskService.getTask(2);
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                taskService.insertTask(idTask, idUser, taskValue, targetDate));
 
-        assertNotNull(gTask);
-        assertEquals("test value 2", gTask.getValueTask());
+        assertEquals("User with id " + idUser + " not found.", exception.getMessage());
     }
 
     @Test
-    public void shouldReturnNullTaskMissing(){
-        assertNull(taskService.getTask(1));
+    void testGetAllTasks() {
+        taskService.insertTask(101L, 1L, "Task 1", ZonedDateTime.now().plusDays(5));
+        taskService.insertTask(102L, 1L, "Task 2", ZonedDateTime.now().plusDays(5));
+
+        Collection<Task> allTasks = taskService.getAllTasks();
+
+        assertEquals(2, allTasks.size());
     }
 
     @Test
-    public void shouldDeleteTaskMap(){
-        Task task = new Task();
-        task.setIdTask(3);
-        task.setValueTask("test value 3");
-        taskService.putTask(task);
+    void testGetTasksWhenNotificationDeleted() {
+        taskService.insertTask(101L, 1L, "Task 1", ZonedDateTime.now().plusDays(5));
+        taskService.insertTask(102L, 1L, "Task 2", ZonedDateTime.now().plusDays(5));
 
-        taskService.deleteTask(3);
+        taskService.deleteTask(1L, 102L, "deleted");
 
-        assertNull(taskService.getTask(3));
+        Collection<Task> tasks = taskService.getTasks();
+
+        assertEquals(1, tasks.size());
+        assertTrue(tasks.stream().anyMatch(task -> task.getIdTask() == 101L));
+        assertFalse(tasks.stream().anyMatch(task -> task.getIdTask() == 102L));
+    }
+
+    @Test
+    void testDeleteTask() {
+        taskService.insertTask(101L, 1L, "Task 1", ZonedDateTime.now().plusDays(5));
+
+        taskService.deleteTask(1L, 101L, "deleted");
+
+        Notification notification = notificationService.notifications.get(101L);
+
+        assertNotNull(notification);
+        assertEquals("deleted", notification.getValue());
     }
 }

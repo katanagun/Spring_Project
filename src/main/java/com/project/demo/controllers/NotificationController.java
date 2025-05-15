@@ -10,20 +10,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/NotificationController")
 public class NotificationController {
-    private final ModelNotificationService mapService;
+    private final ModelNotificationService modelNotificationService;
 
-    public NotificationController(ModelNotificationService mapService){
-        this.mapService = mapService;
+    public NotificationController(ModelNotificationService modelNotificationService){
+        this.modelNotificationService = modelNotificationService;
     }
 
     @GetMapping("/{idUser}")
     public Collection<Notification> getUser(@PathVariable long idUser){
-        return mapService.getUserNotifications(idUser);
+        return modelNotificationService.getUserNotifications(idUser);
     }
 
     @GetMapping("/pending")
     public Collection<Notification> get(){
-        return mapService.getNotification();
+        return modelNotificationService.getAllNotifications();
     }
 
 }

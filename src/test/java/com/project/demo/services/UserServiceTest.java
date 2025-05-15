@@ -6,37 +6,40 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserServiceTest {
-
+class UserServiceTest {
     private UserService userService;
 
     @BeforeEach
-    public void setup(){
+    void setUp() {
         userService = new UserService();
     }
 
     @Test
-    public void shouldPutUserMap(){
-        User user = new User(1, "Bogdan");
-        userService.putUser(user);
+    void testInsertUser() {
+        long idUser = 1L;
+        String nameUser = "Test User";
 
-        assertNotNull(userService.getUser(1));
-        assertEquals("Bogdan", userService.getUser(1).getNameUser());
+        userService.insertUser(idUser, nameUser);
+
+        User user = userService.users.get(idUser);
+
+        assertNotNull(user);
+        assertEquals(idUser, user.getIdUser());
+        assertEquals(nameUser, user.getNameUser());
     }
 
     @Test
-    public void shouldGetUserMap(){
-        User user = new User(2, "Bogdan");
-        userService.putUser(user);
+    void testExistUserWhenUserExists() {
+        long idUser = 1L;
+        userService.insertUser(idUser, "Existing User");
 
-        User gUser = userService.getUser(2);
-
-        assertNotNull(userService.getUser(2));
-        assertEquals("Bogdan", userService.getUser(2).getNameUser());
+        assertTrue(userService.existUser(idUser));
     }
 
     @Test
-    public void shouldGetNullUserMissing(){
-        assertNull(userService.getUser(1));
+    void testExistUserWhenUserDoesNotExist() {
+        long idUser = 999L;
+
+        assertFalse(userService.existUser(idUser));
     }
 }
