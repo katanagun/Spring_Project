@@ -1,25 +1,21 @@
 package com.project.demo.services;
 
-import com.project.demo.db.repository.UserRep;
-import com.project.demo.db.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.project.demo.db.repositories.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
 
 @Service
 public class UserService implements ModelUserService {
-    @Autowired
-    private UserRep userRep;
+    private final UserRepository userDbRepository;
 
-    public User getUser(long idUser){
-        Optional<User> optionalUser = userRep.findById(idUser);
-        return optionalUser.orElse(null);
+    public UserService(UserRepository userDbRepository){
+        this.userDbRepository = userDbRepository;
     }
 
-    public void putUser(User user){
-        userRep.save(user);
+    public boolean existUser(Long userId){
+        return userDbRepository.existsByUserId(userId);
     }
 
+    public void insertUser(Long userId, String userName){
+        userDbRepository.insert(userId, userName);
+    }
 }

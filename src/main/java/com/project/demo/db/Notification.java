@@ -1,50 +1,28 @@
 package com.project.demo.db;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 @Entity
 @Table(name = "Notifications")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Notification {
 
-    /**
-     * Конструктор по умолчанию
-     */
-    public Notification(){
-
-    }
-
-    public long getId() {
-        return Id;
-    }
-
-    public void setId(long id) {
-        Id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     @jakarta.persistence.Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long Id;
+    @Column(name = "NotificationId")
+    private Long notificationId;
 
-    @Column(name = "notification_value")
-    private String value;
+    @Column(name = "UserId")
+    private Long userId;
 
-    @Column(name = "notification_type")
-    private String type;
+    @Column(name = "TaskId")
+    private Long taskId;
+
+    @Column(name = "NotificationValue")
+    private String notificationValue;
 }
