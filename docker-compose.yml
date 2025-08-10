@@ -1,25 +1,12 @@
+version: '3.8'
+
 services:
-  app:
+  demo-app:
     build: .
+    container_name: demo-app
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/testdb
-      SPRING_DATASOURCE_USERNAME: temp
-      SPRING_DATASOURCE_PASSWORD: temp
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    depends_on:
-      - h2-db
-
-  h2-db:
-    image: oscarfonts/h2
-    container_name: h2db
-    ports:
-      - "1521:1521"
-      - "81:81"
-    environment:
-      H2_OPTIONS: "-ifNotExists"
+      - SPRING_PROFILES_ACTIVE=JPA
     volumes:
-      - h2-data:/opt/h2-data
-volumes:
-  h2-data:
+      - ./logs:/app/logs

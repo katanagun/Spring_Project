@@ -1,38 +1,27 @@
 package com.project.demo.controllers;
 
-import com.project.demo.db.repository.NotificationRep;
-import com.project.demo.services.ModelNotificationService;
 import com.project.demo.db.Notification;
+import com.project.demo.services.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
-@RequestMapping("/NotificationController")
+@RequestMapping("/notifications")
 public class NotificationController {
-    private final ModelNotificationService mapService;
+    private final NotificationService notificationService;
 
-    public NotificationController(ModelNotificationService listService, NotificationRep notificationRep){
-        this.mapService = listService;
+    public NotificationController(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
-    @GetMapping("/user/{idNotification}")
-    public Notification getUser(@PathVariable long idNotification){
-        return mapService.getNotification(idNotification, "user");
+    @GetMapping("/getAll")
+    public Collection<Notification> getAllNotifications() {
+        return notificationService.getAllNotifications();
     }
 
-    @GetMapping("/task/{idNotification}")
-    public Notification getTask(@PathVariable long idNotification){
-        return mapService.getNotification(idNotification, "task");
-    }
-
-    @PostMapping("/user")
-    public void postUser(@RequestBody Notification notification){
-        mapService.putNotification(notification, "user");
-    }
-
-    @PostMapping("/task")
-    public void postTask(@RequestBody Notification notification){
-        mapService.putNotification(notification, "task");
+    @GetMapping("/user/{userId}")
+    public Collection<Notification> getUserNotifications(@PathVariable Long userId) {
+        return notificationService.getUserNotifications(userId);
     }
 }
