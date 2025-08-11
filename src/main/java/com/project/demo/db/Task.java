@@ -1,39 +1,33 @@
 package com.project.demo.db;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "Tasks")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Task {
 
-    /**
-     * Конструктор по умолчанию
-     **/
-    public Task(){
-
-    }
-
     @jakarta.persistence.Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private long Id;
+    @Column(name = "TaskId")
+    private Long taskId;
 
-    @Column(name = "task_value")
-    private String value;
+    @Column(name = "UserId")
+    private Long userId;
 
-    public long getId() {
-        return Id;
-    }
+    @Column(name = "TaskValue")
+    private String taskValue;
 
-    public void setId(long id){
-        Id = id;
-    }
+    @Column(name = "CreationDate")
+    private ZonedDateTime creationDate = ZonedDateTime.now();
 
-    public String getValue(){
-        return value;
-    }
+    @Column(name = "TargetDate")
+    private ZonedDateTime targetDate;
 
-    public void setValue(String value){
-        this.value = value;
-    }
 }

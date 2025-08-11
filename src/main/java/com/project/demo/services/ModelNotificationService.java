@@ -2,10 +2,10 @@ package com.project.demo.services;
 
 import com.project.demo.db.Notification;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface ModelNotificationService {
-    public Notification getNotification(long id, String type);
-    public void putNotification(Notification notification, String type);
+    public Collection<Notification> getUserNotifications(Long userId);
+    public Collection<Notification> getAllNotifications();
 
 }

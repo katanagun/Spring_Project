@@ -1,49 +1,22 @@
 package com.project.demo.db;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
-    /**
-     * Конструктор по умолчанию
-     */
-    public User(){
-
-    }
-
-    public long getId(){
-        return Id;
-    }
-
-    public void setId(long id) {
-        Id = id;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getType(){
-        return type;
-    }
-
-    public void setType(String type){
-        this.type = type;
-    }
-
     @jakarta.persistence.Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private long Id;
+    @Column(name = "UserId")
+    private Long userId;
 
-    @Column(name = "user_name")
-    private String name;
+    @Column(name = "UserName")
+    private String userName;
 
-    private String type;
 }
