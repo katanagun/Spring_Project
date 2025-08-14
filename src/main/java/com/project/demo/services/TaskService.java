@@ -6,6 +6,8 @@ import com.project.demo.db.Task;
 import com.project.demo.db.repositories.NotificationRepository;
 import com.project.demo.db.repositories.TaskRepository;
 import com.project.demo.db.repositories.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -26,6 +28,7 @@ public class TaskService implements ModelTaskService {
     }
 
     @Override
+    @CacheEvict(value = {"tasksByUser", "tasksAll"}, allEntries = true)
     public void insertTask(Long taskId, Long userId, String taskValue, ZonedDateTime targetDate) {
         if (!userRepo.existsByUserId(userId)) {
             throw new IllegalArgumentException("User with id " + userId + " not found.");
@@ -38,6 +41,7 @@ public class TaskService implements ModelTaskService {
     }
 
     @Override
+    @Cacheable(value = "tasksByUser", key = "#root.methodName")
     public Collection<Task> getTasks() {
         return taskRepo.findAllAndDeletedFalse().stream()
                 .filter(task -> task.getCreationDate().isBefore(task.getTargetDate()))
@@ -51,6 +55,7 @@ public class TaskService implements ModelTaskService {
     }
 
     @Override
+    @Cacheable(value = "tasksAll")
     public Collection<Task> getAllTasks() {
         return taskRepo.findAllAndDeletedFalse().stream()
                 .filter(task -> {
@@ -63,6 +68,7 @@ public class TaskService implements ModelTaskService {
     }
 
     @Override
+    @CacheEvict(value = {"tasksByUser", "tasksAll"}, allEntries = true)
     public void deleteTask(Long userId, Long taskId) {
         Notification existing = notificationRepo.findByUserId(userId).stream()
                 .filter(n -> Objects.equals(n.getTaskId(), taskId))

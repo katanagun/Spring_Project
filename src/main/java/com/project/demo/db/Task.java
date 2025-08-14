@@ -7,14 +7,18 @@ import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "Tasks")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task {
+public class Task implements Serializable {
 
-    @jakarta.persistence.Id
+    private static final long serialVersionUID = 1L;
+
+    @Id
     @Column(name = "TaskId")
     private Long taskId;
 
@@ -29,5 +33,4 @@ public class Task {
 
     @Column(name = "TargetDate")
     private ZonedDateTime targetDate;
-
 }
