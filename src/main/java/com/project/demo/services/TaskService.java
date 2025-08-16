@@ -1,9 +1,7 @@
 package com.project.demo.services;
 
-import com.project.demo.Exceptions.NotificationNotFoundException;
-import com.project.demo.db.Notification;
 import com.project.demo.db.Task;
-import com.project.demo.db.repositories.NotificationRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import com.project.demo.db.repositories.TaskRepository;
 import com.project.demo.db.repositories.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
@@ -12,19 +10,19 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class TaskService implements ModelTaskService {
     private final TaskRepository taskRepo;
-    private final NotificationRepository notificationRepo;
     private final UserRepository userRepo;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public TaskService(TaskRepository taskRepo, NotificationRepository notificationRepo, UserRepository userRepo) {
+    public TaskService(TaskRepository taskRepo,
+                       UserRepository userRepo,
+                       KafkaTemplate<String, String> kafkaTemplate) {
         this.taskRepo = taskRepo;
-        this.notificationRepo = notificationRepo;
         this.userRepo = userRepo;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -33,54 +31,33 @@ public class TaskService implements ModelTaskService {
         if (!userRepo.existsByUserId(userId)) {
             throw new IllegalArgumentException("User with id " + userId + " not found.");
         }
+
         taskRepo.insert(taskId, userId, taskValue, targetDate);
 
-        Notification notification = new Notification(taskId, userId, taskId, "created");
-
-        notificationRepo.saveNotification(notification);
-    }
-
-    @Override
-    @Cacheable(value = "tasksByUser", key = "#root.methodName")
-    public Collection<Task> getTasks() {
-        return taskRepo.findAllAndDeletedFalse().stream()
-                .filter(task -> task.getCreationDate().isBefore(task.getTargetDate()))
-                .filter(task -> {
-                    Notification n = notificationRepo.findByUserId(task.getUserId()).stream()
-                            .filter(notif -> notif.getTaskId().equals(task.getTaskId()))
-                            .findFirst().orElse(null);
-                    return n == null || !"deleted".equals(n.getNotificationValue());
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Cacheable(value = "tasksAll")
-    public Collection<Task> getAllTasks() {
-        return taskRepo.findAllAndDeletedFalse().stream()
-                .filter(task -> {
-                    Notification n = notificationRepo.findByUserId(task.getUserId()).stream()
-                            .filter(notif -> notif.getTaskId().equals(task.getTaskId()))
-                            .findFirst().orElse(null);
-                    return n == null || !"deleted".equals(n.getNotificationValue());
-                })
-                .collect(Collectors.toList());
+        String event = String.format("{\"taskId\":%d,\"userId\":%d,\"event\":\"created\"}", taskId, userId);
+        kafkaTemplate.send("task-events", event);
     }
 
     @Override
     @CacheEvict(value = {"tasksByUser", "tasksAll"}, allEntries = true)
     public void deleteTask(Long userId, Long taskId) {
-        Notification existing = notificationRepo.findByUserId(userId).stream()
-                .filter(n -> Objects.equals(n.getTaskId(), taskId))
-                .findFirst()
-                .orElse(null);
-
-        if (existing != null) {
-            existing.setNotificationValue("deleted");
-            notificationRepo.saveNotification(existing);
-        } else {
-            throw new NotificationNotFoundException(taskId, userId);
+        if (!userRepo.existsByUserId(userId)) {
+            throw new IllegalArgumentException("User with id " + userId + " not found.");
         }
+
+        String event = String.format("{\"taskId\":%d,\"userId\":%d,\"event\":\"deleted\"}", taskId, userId);
+        kafkaTemplate.send("task-events", event);
     }
 
+    @Override
+    @Cacheable(value = "tasksByUser", key = "#root.methodName")
+    public Collection<Task> getTasks() {
+        return taskRepo.findAllAndDeletedFalse();
+    }
+
+    @Override
+    @Cacheable(value = "tasksAll")
+    public Collection<Task> getAllTasks() {
+        return taskRepo.findAllAndDeletedFalse();
+    }
 }
