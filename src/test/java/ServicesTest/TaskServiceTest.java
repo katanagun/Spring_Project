@@ -8,10 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class TaskServiceTest {
@@ -30,17 +32,20 @@ class TaskServiceTest {
     }
 
     @Test
-    void insertTask_SendsKafkaEvent() {
+    void insertTask_SendsKafkaEvent_AndStoresUTCDate() {
         Long taskId = 1L;
         Long userId = 100L;
         String taskValue = "Test Task";
-        ZonedDateTime targetDate = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime localDate = ZonedDateTime.now().plusDays(1);
 
         when(userRepo.existsByUserId(userId)).thenReturn(true);
 
-        taskService.insertTask(taskId, userId, taskValue, targetDate);
+        taskService.insertTask(taskId, userId, taskValue, localDate);
 
-        verify(taskRepo).insert(taskId, userId, taskValue, targetDate);
+        verify(taskRepo).insert(eq(taskId), eq(userId), eq(taskValue), argThat(date ->
+                date.getOffset().equals(ZoneOffset.UTC)
+        ));
+
         verify(kafkaTemplate).send(eq("task-events"),
                 eq(String.format("{\"taskId\":%d,\"userId\":%d,\"event\":\"created\"}", taskId, userId)));
     }
@@ -56,7 +61,19 @@ class TaskServiceTest {
     }
 
     @Test
-    void deleteTask_SendsKafkaEvent() {
+    void insertTask_ThrowsException_WhenTargetDateInPast() {
+        Long userId = 100L;
+        when(userRepo.existsByUserId(userId)).thenReturn(true);
+
+        ZonedDateTime pastDate = ZonedDateTime.now().minusDays(1);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                taskService.insertTask(1L, userId, "Expired Task", pastDate)
+        );
+    }
+
+    @Test
+    void deleteTask_SendsKafkaEvent_AndDeletesTask() {
         Long taskId = 1L;
         Long userId = 100L;
 
@@ -64,6 +81,7 @@ class TaskServiceTest {
 
         taskService.deleteTask(userId, taskId);
 
+        verify(taskRepo).delete(eq(userId), eq(taskId));
         verify(kafkaTemplate).send(eq("task-events"),
                 eq(String.format("{\"taskId\":%d,\"userId\":%d,\"event\":\"deleted\"}", taskId, userId)));
     }

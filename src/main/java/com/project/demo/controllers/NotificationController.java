@@ -1,6 +1,7 @@
 package com.project.demo.controllers;
 
 import com.project.demo.db.Notification;
+import com.project.demo.services.ModelNotificationService;
 import com.project.demo.services.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,9 +10,9 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
-    private final NotificationService notificationService;
+    private final ModelNotificationService notificationService;
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(ModelNotificationService notificationService) {
         this.notificationService = notificationService;
     }
 

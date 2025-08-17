@@ -5,6 +5,8 @@ import com.project.demo.db.Notification;
 import com.project.demo.db.Task;
 import com.project.demo.db.repositories.NotificationRepository;
 import com.project.demo.db.repositories.TaskRepository;
+import com.project.demo.services.ModelNotificationService;
+import com.project.demo.services.ModelTaskService;
 import com.project.demo.services.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,13 +30,15 @@ public class NotificationControllerTest {
     @Mock
     private TaskRepository taskRepository;
 
-    private NotificationService notificationService;
+    private ModelNotificationService notificationService;
 
     private NotificationController notificationController;
 
+    private ModelTaskService taskService;
+
     @BeforeEach
     public void setup() {
-        notificationService = new NotificationService(notificationRepository, taskRepository);
+        notificationService = new NotificationService(notificationRepository, taskRepository, taskService);
         notificationController = new NotificationController(notificationService);
     }
 

@@ -33,4 +33,13 @@ public class TaskJpaAdapter implements TaskRepository {
     public Collection<Task> findAllAndDeletedFalse() {
         return jpaRepository.findAll();
     }
+
+    @Override
+    public void delete(Long userId, Long taskId) {
+        Task task = jpaRepository.findById(taskId).orElse(null);
+        if (task != null && task.getUserId().equals(userId)) {
+            jpaRepository.delete(task);
+        }
+    }
+
 }
