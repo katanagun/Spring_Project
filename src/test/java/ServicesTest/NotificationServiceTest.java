@@ -4,6 +4,8 @@ import com.project.demo.db.Notification;
 import com.project.demo.db.Task;
 import com.project.demo.db.repositories.NotificationRepository;
 import com.project.demo.db.repositories.TaskRepository;
+import com.project.demo.services.ModelNotificationService;
+import com.project.demo.services.ModelTaskService;
 import com.project.demo.services.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +21,17 @@ class NotificationServiceTest {
 
     private NotificationRepository notificationRepo;
     private TaskRepository taskRepo;
-    private NotificationService notificationService;
+    private ModelNotificationService notificationService;
+    private ModelTaskService taskService;
 
     @BeforeEach
     void setUp() {
         notificationRepo = mock(NotificationRepository.class);
         taskRepo = mock(TaskRepository.class);
-        notificationService = new NotificationService(notificationRepo, taskRepo);
+        taskService = mock(ModelTaskService.class); // ← добавлено
+        notificationService = new NotificationService(notificationRepo, taskRepo, taskService);
     }
+
 
     @Test
     void testGetUserNotifications_ReturnsCorrectList() {

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import java.io.Serializable;
@@ -29,9 +30,8 @@ public class Task implements Serializable {
     private String taskValue;
 
     @Column(name = "CreationDate")
-    private ZonedDateTime creationDate = ZonedDateTime.now();
+    private ZonedDateTime creationDate = ZonedDateTime.now(ZoneOffset.UTC);
 
     @Column(name = "TargetDate")
     private ZonedDateTime targetDate;
-
 }

@@ -26,4 +26,12 @@ public class TaskInMemoryRepository implements TaskRepository {
         return tasks.values();
     }
 
+    @Override
+    public void delete(Long userId, Long taskId) {
+        Task task = tasks.get(taskId);
+        if (task != null && Objects.equals(task.getUserId(), userId)) {
+            tasks.remove(taskId);
+        }
+    }
+
 }

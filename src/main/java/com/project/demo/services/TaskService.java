@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 
@@ -31,8 +32,13 @@ public class TaskService implements ModelTaskService {
         if (!userRepo.existsByUserId(userId)) {
             throw new IllegalArgumentException("User with id " + userId + " not found.");
         }
+        if (targetDate.toInstant().isBefore(ZonedDateTime.now().toInstant())) {
+            throw new IllegalArgumentException("Target date must be in the future.");
+        }
 
-        taskRepo.insert(taskId, userId, taskValue, targetDate);
+        ZonedDateTime utcTargetDate = targetDate.withZoneSameInstant(ZoneOffset.UTC);
+
+        taskRepo.insert(taskId, userId, taskValue, utcTargetDate);
 
         String event = String.format("{\"taskId\":%d,\"userId\":%d,\"event\":\"created\"}", taskId, userId);
         kafkaTemplate.send("task-events", event);
@@ -44,6 +50,8 @@ public class TaskService implements ModelTaskService {
         if (!userRepo.existsByUserId(userId)) {
             throw new IllegalArgumentException("User with id " + userId + " not found.");
         }
+
+        taskRepo.delete(userId, taskId);
 
         String event = String.format("{\"taskId\":%d,\"userId\":%d,\"event\":\"deleted\"}", taskId, userId);
         kafkaTemplate.send("task-events", event);
@@ -60,5 +68,4 @@ public class TaskService implements ModelTaskService {
     public Collection<Task> getAllTasks() {
         return taskRepo.findAllAndDeletedFalse();
     }
-  
 }

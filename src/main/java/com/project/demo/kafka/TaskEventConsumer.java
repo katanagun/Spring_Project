@@ -2,6 +2,7 @@ package com.project.demo.kafka;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.demo.services.ModelNotificationService;
 import com.project.demo.services.NotificationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -9,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskEventConsumer {
 
-    private final NotificationService notificationService;
+    private final ModelNotificationService notificationService;
 
-    public TaskEventConsumer(NotificationService notificationService) {
+    public TaskEventConsumer(ModelNotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
