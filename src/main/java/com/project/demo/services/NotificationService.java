@@ -14,6 +14,10 @@ public class NotificationService implements ModelNotificationService {
 
     Map<Long, Notification> notifications = new HashMap<>();
 
+    public NotificationService(TaskService taskService){
+        this.taskService = taskService;
+    }
+
     public Collection<Notification> getUserNotifications(long idUser) {
         return notifications.values().stream()
                 .filter(notification -> notification.getIdUser() == idUser)

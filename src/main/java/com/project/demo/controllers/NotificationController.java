@@ -26,4 +26,5 @@ public class NotificationController {
         return modelNotificationService.getAllNotifications();
     }
 
+
 }

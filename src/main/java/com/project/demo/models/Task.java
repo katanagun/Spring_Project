@@ -19,5 +19,5 @@ public class Task {
         this.creationDate = ZonedDateTime.now();
         this.targetDate = targetDate;
     }
-}
 
+}
