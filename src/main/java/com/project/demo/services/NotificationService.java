@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationService implements ModelNotificationService {
     TaskService taskService;
+
     Map<Long, Notification> notifications = new HashMap<>();
 
     public NotificationService(TaskService taskService){

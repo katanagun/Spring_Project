@@ -10,4 +10,5 @@ public interface ModelTaskService {
     public Collection<Task> getTasks();
     public Collection<Task> getAllTasks();
     public void deleteTask(long idUser, long idTask, String notification);
+
 }
