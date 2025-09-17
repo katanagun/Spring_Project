@@ -24,4 +24,5 @@ public class NotificationController {
     public Collection<Notification> getUserNotifications(@PathVariable Long userId) {
         return notificationService.getUserNotifications(userId);
     }
+
 }
