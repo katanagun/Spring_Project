@@ -40,4 +40,26 @@ public class NotificationService implements ModelNotificationService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public void updateNotification(Long userId, Long taskId, String eventType) {
+        if (!eventType.equals("created") && !eventType.equals("deleted")) return;
+
+        Notification existing = notificationRepo.findByUserId(userId).stream()
+                .filter(n -> Objects.equals(n.getTaskId(), taskId))
+                .findFirst()
+                .orElse(null);
+
+        if (existing != null) {
+            existing.setNotificationValue(eventType);
+            notificationRepo.saveNotification(existing);
+        } else {
+            Notification newNotif = new Notification();
+            newNotif.setNotificationId(taskId); // ← присваиваем taskId как notificationId
+            newNotif.setUserId(userId);
+            newNotif.setTaskId(taskId);
+            newNotif.setNotificationValue(eventType);
+            notificationRepo.saveNotification(newNotif);
+        }
+    }
+
 }
