@@ -40,5 +40,4 @@ public class NotificationService implements ModelNotificationService {
                 })
                 .collect(Collectors.toList());
     }
-  
 }
