@@ -18,4 +18,5 @@ public class UserService implements ModelUserService {
     public void insertUser(Long userId, String userName){
         userDbRepository.insert(userId, userName);
     }
+
 }
