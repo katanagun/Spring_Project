@@ -81,7 +81,4 @@ public class NotificationService implements ModelNotificationService {
                 });
     }
 
-
-
-
 }

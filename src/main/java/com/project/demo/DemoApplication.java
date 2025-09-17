@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @EnableScheduling
 @EnableAsync
+
 public class DemoApplication {
 
 	public static void main(String[] args) {
