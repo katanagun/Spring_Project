@@ -60,4 +60,5 @@ public class TaskService implements ModelTaskService {
     public Collection<Task> getAllTasks() {
         return taskRepo.findAllAndDeletedFalse();
     }
+  
 }

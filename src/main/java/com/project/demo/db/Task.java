@@ -33,4 +33,5 @@ public class Task implements Serializable {
 
     @Column(name = "TargetDate")
     private ZonedDateTime targetDate;
+
 }
